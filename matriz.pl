@@ -1,3 +1,22 @@
+ler_txt(Filename) :-  open(Filename,read,OS), get_char(OS,C), txt_to_list(C,L,OS), close(OS), print(L).
+
+txt_to_list(_,[],OS)  :-  at_end_of_stream(OS).
+txt_to_list(' ',L,OS)  :-  get_char(OS,Q), txt_to_list(Q,L,OS).
+txt_to_list('\n',L,OS)  :-  get_char(OS,Q), txt_to_list(Q,L,OS).
+txt_to_list(C,[C|L],OS) :- get_char(OS,Q), txt_to_list(Q,L,OS).
+
+grava_mtr :- apg(mtr)*, open(H, $mtrz.txt$,r), ctr_set(0,1),
+			le_grv_mtr(H),close(H),grv_ident.
+
+le_grv_mtr(H) :- repeat, [! read(H,Mt) !],
+				[! fim_arq(Mt, Ind) !], Ind == fim.
+
+fim_arq(end_of_file,fim) :- !.
+fim_arq(Mt,nao) :- ctr_inc(0,I),grv_mtr(Mt), write(I:Mt), n1.
+
+grv_mtr(mt(Nome,L)) :- recordz(mtr,matr(Nome,L),_).
+
+
 posicao(0,N,[Cabeca|_],E) :- posicao_lista(N,Cabeca,E).
 posicao(M,N,[_|Cauda],E) :- M1 is M - 1, posicao(M1,N,Cauda,E).
 
