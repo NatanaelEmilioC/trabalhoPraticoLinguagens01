@@ -1,4 +1,3 @@
-
 %Cria uma matriz MxN qualquer com um numero predefinido
 %Nr é o número de linhas da matriz
 %Nc é o número de colunas da matriz
@@ -93,3 +92,16 @@ move(Pr,Pc,M,["Left"|C]) :- moveLeft(Pr,Pc,M,C).
 %Ways são os caminhos encontrados
 
 jogar(R,C,N,Ri,Ci,Ways) :- createMatrix(R,C,N,M),!,move(Ri,Ci,M,Ways).           
+
+readFileSee(InputFile, OutputFile) :-
+    seeing(OldStream),
+    see(InputFile),
+    tell(OutputFile),
+    repeat,
+    read(Term),
+    ( Term == end_of_file -> true ; Term, fail),
+    seen,
+    told,
+    see(OldStream).
+
+executar :- readFileSee('matriz.txt', 'novaMatriz.txt').
