@@ -1,3 +1,6 @@
+
+findall(W,mover(1,1,[[1,1],[1,1]],W),C),!,length(C, T), write(C), write(T).
+
 posicao(0,N,[Cabeca|_],E) :- posicao_lista(N,Cabeca,E).
     posicao(M,N,[_|Cauda],E) :- M1 is M - 1, posicao(M1,N,Cauda,E).
 

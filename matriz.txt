@@ -1,1 +1,1 @@
-jogar(2,2,1,1,1,W), write(W).
+mover(1,1,[[1,1],[1,1]],W), write(W), write('\n').
