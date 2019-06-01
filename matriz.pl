@@ -1,29 +1,33 @@
+mover(Linha,Coluna,Matriz,[".."]) :- \+verificaMatriz(Linha,Coluna,Matriz).
+mover(Linha,Coluna,Matriz,["Embaixo"|C]) :- moverBaixo(Linha,Coluna,Matriz,C).
+mover(Linha,Coluna,Matriz,["Direita"|C]) :- moverDireita(Linha,Coluna,Matriz,C).
+mover(Linha,Coluna,Matriz,["Cima"|C]) :- moverCima(Linha,Coluna,Matriz,C).
+mover(Linha,Coluna,Matriz,["Esquerda"|C]) :- moverEsquerda(Linha,Coluna,Matriz,C). 
+
 %Recupera um elemento da matriz
-%R é a linha do elemento requerido
-%C é a coluna do elemento requerido
-%E é o retorno(Elemento posicionado em RC)
-pegaElemento(R,C,Matriz,E) :- nth1(R,Matriz,Coluna),nth1(C,Coluna,E).
-
-%Verifica se a matriz ainda não alcançou o estado final
-%Linha é a linha em que o marcador se encontra
-%Coluna é a coluna em que o marcador se encontra
-
-verificaMatriz(Linha,Coluna,Matriz) :- verificaMatriz(Linha,Coluna,1,Matriz).
-verificaMatriz(Linha,Coluna,Linha,[R|_]) :- verificaColuna(Coluna,R),!.
-verificaMatriz(Linha,_,I,[R|_]) :- Linha =\= I, verificaColuna(-1,R),!.
-verificaMatriz(Linha,Coluna,I,[_|Rs]) :- Ni is I+1, verificaMatriz(Linha,Coluna,Ni,Rs).
-verificaColuna(Coluna,R) :- verificaColuna(Coluna,1,R).
-verificaColuna(Coluna,I,[R|_]) :- Coluna =\= I, R =\= -1,!.
-verificaColuna(Coluna,I,[_|Rs]):- Ni is I+1, verificaColuna(Coluna,Ni,Rs).
+%Elemento é o retorno(Elemento posicionado em LinhaColuna)
+pegaElemento(Linha,Coluna,Matriz,Elemento) :- nth1(Linha,Matriz,ColunaAux),nth1(Coluna,ColunaAux,Elemento).
 
 %Insere elemento na matriz na posição Linha,Coluna e retorna a nova matriz resultante
 %Parâmetros: (Elemento, Linha,Coluna, Matriz, NovaMatriz)
 inserirMatriz(_,_,_,[],[]).
-inserirMatriz(Elemento,1,1,[[_|Xs]|M1],[[Elemento|Xs1]|M2]) :- !, inserirMatriz(Elemento,0,0,[Xs|M1],[Xs1|M2]).
-inserirMatriz(Elemento,0,0,[[X]|Xs],[[X]|Xs1]) :- inserirMatriz(Elemento,0,0,Xs,Xs1), !.
-inserirMatriz(Elemento,0,0,[[X|Xs]|M1],[[X|Xs1]|M2]) :- inserirMatriz(Elemento,0,0,[Xs|M1],[Xs1|M2]).
-inserirMatriz(Elemento,1,Coluna,[[X|Xs]|M1],[[X|Xs1]|M2]) :- PcAux is Coluna-1, inserirMatriz(Elemento,1,PcAux,[Xs|M1],[Xs1|M2]). 
-inserirMatriz(Elemento,Linha,Coluna,[Xs|M1],[Xs|M2]) :- PrAux is Linha-1, inserirMatriz(Elemento,PrAux,Coluna,M1,M2), !.
+inserirMatriz(Elemento,1,1,[[_|Cauda]|Matriz1],[[Elemento|CaudaAux]|Matriz2]) :- !, inserirMatriz(Elemento,0,0,[Cauda|Matriz1],[CaudaAux|Matriz2]).
+inserirMatriz(Elemento,0,0,[[Cabeca]|Cauda],[[Cabeca]|CaudaAux]) :- inserirMatriz(Elemento,0,0,Cauda,CaudaAux), !.
+inserirMatriz(Elemento,0,0,[[Cabeca|Cauda]|Matriz1],[[Cabeca|CaudaAux]|Matriz2]) :- inserirMatriz(Elemento,0,0,[Cauda|Matriz1],[CaudaAux|Matriz2]).
+inserirMatriz(Elemento,1,Coluna,[[Cabeca|Cauda]|Matriz1],[[Cabeca|CaudaAux]|Matriz2]) :- ProximaNaColunaAux is Coluna-1, inserirMatriz(Elemento,1,ProximaNaColunaAux,[Cauda|Matriz1],[CaudaAux|Matriz2]). 
+inserirMatriz(Elemento,Linha,Coluna,[Cauda|Matriz1],[Cauda|Matriz2]) :- ProximaNaLinhaAux is Linha-1, inserirMatriz(Elemento,ProximaNaLinhaAux,Coluna,Matriz1,Matriz2), !.
+
+
+%Verifica se a matriz ainda não alcançou o estado final
+%Linha é a linha em que o marcador se encontra
+%Coluna é a coluna em que o marcador se encontra
+verificaMatriz(Linha,Coluna,Matriz) :- verificaMatriz(Linha,Coluna,1,Matriz).
+verificaMatriz(Linha,Coluna,Linha,[L|_]) :- verificaColuna(Coluna,L),!.
+verificaMatriz(Linha,_,Indice,[L|_]) :- Linha =\= Indice, verificaColuna(-1,L),!.
+verificaMatriz(Linha,Coluna,Indice,[_|Cauda]) :- ProximoIndice is Indice+1, verificaMatriz(Linha,Coluna,ProximoIndice,Cauda).
+verificaColuna(Coluna,L) :- verificaColuna(Coluna,1,L).
+verificaColuna(Coluna,Indice,[L|_]) :- Coluna =\= Indice, L =\= -1,!.
+verificaColuna(Coluna,Indice,[_|Cauda]):- ProximoIndice is Indice+1, verificaColuna(Coluna,ProximoIndice,Cauda).
 
 %Confere se a posição(Linha,Coluna) é uma posição válida para a matriz
 posicaoValida(Linha,Coluna,Matriz) :- length(Matriz,PrMax),
@@ -37,39 +41,33 @@ posicaoValida(Linha,Coluna,Matriz) :- length(Matriz,PrMax),
                             Elemento >= 0.
 
 %mover para baixo
-moverBaixo(Linha,Coluna,Matriz,Cs) :- PrNext is Linha+1,
-                        posicaoValida(PrNext,Coluna,Matriz),
+moverBaixo(Linha,Coluna,Matriz,Cs) :- ProximaPosicaoNaLinha is Linha+1,
+                        posicaoValida(ProximaPosicaoNaLinha,Coluna,Matriz),
                         pegaElemento(Linha,Coluna,Matriz,Elemento),  
-                        Eaux is Elemento - 1,    
-                        inserirMatriz(Eaux,Linha,Coluna,Matriz,Mod),!,
-                        mover(PrNext,Coluna,Mod,Cs).
+                        ElementoAuxiliar is Elemento - 1,    
+                        inserirMatriz(ElementoAuxiliar,Linha,Coluna,Matriz,Modificado),!,
+                        mover(ProximaPosicaoNaLinha,Coluna,Modificado,Cs).
 %mover para direita  
-moverDireita(Linha,Coluna,Matriz,Cs) :- PcNext is Coluna+1,
-                         posicaoValida(Linha,PcNext,Matriz),
+moverDireita(Linha,Coluna,Matriz,Cs) :- ProximaPosicaoNaColuna is Coluna+1,
+                         posicaoValida(Linha,ProximaPosicaoNaColuna,Matriz),
                          pegaElemento(Linha,Coluna,Matriz,Elemento),
-                         Eaux is Elemento - 1,    
-                         inserirMatriz(Eaux,Linha,Coluna,Matriz,Mod),!,
-                         mover(Linha,PcNext,Mod,Cs).
+                         ElementoAuxiliar is Elemento - 1,    
+                         inserirMatriz(ElementoAuxiliar,Linha,Coluna,Matriz,Modificado),!,
+                         mover(Linha,ProximaPosicaoNaColuna,Modificado,Cs).
 %mover para cima
-moverCima(Linha,Coluna,Matriz,Cs) :- PrNext is Linha-1,
-                      posicaoValida(PrNext,Coluna,Matriz),    
+moverCima(Linha,Coluna,Matriz,Cs) :- ProximaPosicaoNaLinha is Linha-1,
+                      posicaoValida(ProximaPosicaoNaLinha,Coluna,Matriz),    
                       pegaElemento(Linha,Coluna,Matriz,Elemento),
-                      Eaux is Elemento - 1,    
-                      inserirMatriz(Eaux,Linha,Coluna,Matriz,Mod),!,
-                      mover(PrNext,Coluna,Mod,Cs).
+                      ElementoAuxiliar is Elemento - 1,    
+                      inserirMatriz(ElementoAuxiliar,Linha,Coluna,Matriz,Modificado),!,
+                      mover(ProximaPosicaoNaLinha,Coluna,Modificado,Cs).
 %mover para esquerda
-moverEsquerda(Linha,Coluna,Matriz,Cs) :- PcNext is Coluna-1,
-                        posicaoValida(Linha,PcNext,Matriz),
+moverEsquerda(Linha,Coluna,Matriz,Cs) :- ProximaPosicaoNaColuna is Coluna-1,
+                        posicaoValida(Linha,ProximaPosicaoNaColuna,Matriz),
                         pegaElemento(Linha,Coluna,Matriz,Elemento),
-                        Eaux is Elemento - 1,    
-                        inserirMatriz(Eaux,Linha,Coluna,Matriz,Mod),!,                                 
-                        mover(Linha,PcNext,Mod,Cs).
-
-mover(Linha,Coluna,Matriz,[".."]) :- \+verificaMatriz(Linha,Coluna,Matriz).
-mover(Linha,Coluna,Matriz,["Embaixo"|C]) :- moverBaixo(Linha,Coluna,Matriz,C).
-mover(Linha,Coluna,Matriz,["Direita"|C]) :- moverDireita(Linha,Coluna,Matriz,C).
-mover(Linha,Coluna,Matriz,["Cima"|C]) :- moverCima(Linha,Coluna,Matriz,C).
-mover(Linha,Coluna,Matriz,["Esquerda"|C]) :- moverEsquerda(Linha,Coluna,Matriz,C). 
+                        ElementoAuxiliar is Elemento - 1,    
+                        inserirMatriz(ElementoAuxiliar,Linha,Coluna,Matriz,Modificado),!,                                 
+                        mover(Linha,ProximaPosicaoNaColuna,Modificado,Cs).
 
 executar(Matriz,LinhaI,ColunaI,Caminhos) :-
     soGravaEmArquivo((findall(Caminhos,mover(LinhaI,ColunaI,Matriz,Caminhos),C),
