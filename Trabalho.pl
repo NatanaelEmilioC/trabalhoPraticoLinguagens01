@@ -24,6 +24,7 @@ matrixVerify(Pr,Pc,I,[_|Rs]) :- Ni is I+1, matrixVerify(Pr,Pc,Ni,Rs).
 rowVerify(Pc,R) :- rowVerify(Pc,1,R).
 rowVerify(Pc,I,[R|_]) :- Pc =\= I, R =\= -1,!.
 rowVerify(Pc,I,[_|Rs]):- Ni is I+1, rowVerify(Pc,Ni,Rs).
+rowVerify(Ec,I,[R|Rs]):- ((R is -1) ;((Ec is I),(R == 0))),Ni is I+1, rowVerify(Ec,Ni,Rs).
 
 %Insere elemento na matriz na posição Pr,Pc e retorna a nova matriz resultante
 %Parâmetros: (Elemento, Pr,Pc, Matriz, NovaMatriz)
