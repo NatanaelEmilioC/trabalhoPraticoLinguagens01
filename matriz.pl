@@ -152,4 +152,4 @@ verificaArquivo(Arquivo):-
     append('saida.txt').
 
 %cláusula para testar o programa
-executarTeste :- executar([[1 , 1, 1 ] , [1 , 1, 1 ],[1 , 1, 1 ] ] , 1 , 1).
+executarTeste :- executar([[2 , 3, 1 ] , [1 , 1, 1 ],[1 , 1, 1 ] ] , 1 , 1).
